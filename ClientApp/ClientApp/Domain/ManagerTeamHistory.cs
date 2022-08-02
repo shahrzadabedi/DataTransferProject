@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClientApp.Domain
 {
+    [Serializable]
     public class ManagerTeamHistory
     {
         public ManagerTeamHistory(Guid managerId, Guid teamId)
@@ -16,7 +17,7 @@ namespace ClientApp.Domain
         private ManagerTeamHistory()
         {
         }
-
+        public Guid Id { get; private set; }
         public Guid ManagerId { get; private set; }
         public Guid TeamId { get; private set; }
     }

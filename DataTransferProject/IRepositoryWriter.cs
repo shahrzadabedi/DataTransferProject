@@ -5,6 +5,6 @@ namespace DataTransferProject
 {
     public interface IRepositoryWriter
     {
-        void WriteToRepository<TData>(IList<TData> data) where TData : class;
+        void WriteToRepository<TData>() where TData : class;
     }
 }

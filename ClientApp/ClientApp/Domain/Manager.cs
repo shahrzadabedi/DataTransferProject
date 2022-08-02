@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClientApp.Domain
 {
+    [Serializable]
     public class Manager
     {
         public Guid Id { get; private set; }

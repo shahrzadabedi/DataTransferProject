@@ -1,4 +1,5 @@
 ﻿using DataTransferProject;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,14 @@ namespace ClientApp.Infrastructure
 {
     public class SqlRepositoryWriter : IRepositoryWriter
     {
-        private readonly TeamContext teamContext;
-        public SqlRepositoryWriter(TeamContext teamContext)
+        private readonly TeamContext dbContext;
+        public SqlRepositoryWriter(TeamContext dbContext)
         {
-            this.teamContext = teamContext;
+            this.dbContext = dbContext;
         }
-        public void WriteToRepository<TData>(IList<TData> data) where TData : class
+        public void WriteToRepository<TData>() where TData : class
         {
-            teamContext.BulkInsert(data);
-            //throw new NotImplementedException();
+            //teamContext.BulkInsert(data);
         }
         
     }

@@ -1,3 +1,5 @@
+using ClientApp.Infrastructure;
+using DataTransferProject;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +24,9 @@ namespace ClientApp
         {
             services.ConfigureSqlContext(Configuration);
             services.ConfigureOtherContext(Configuration);
+            services.AddScoped<ITransferManager, TransferManager>();
+            services.AddScoped<IRepositoryWriter, SqlRepositoryWriter>();
+            services.AddScoped<IRepositoryReader, ExcelRepositoryReader>();
             services.AddControllers();
         }
 

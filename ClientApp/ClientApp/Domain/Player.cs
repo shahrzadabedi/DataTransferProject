@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClientApp.Domain
 {
+    [Serializable]
     public class Player
     {
         public int Id { get; private set; }

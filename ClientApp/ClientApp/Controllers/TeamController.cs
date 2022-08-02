@@ -1,4 +1,5 @@
 ﻿using ClientApp.Infrastructure;
+using DataTransferProject;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,10 +13,20 @@ namespace ClientApp.Controllers
     [ApiController]
     public class TeamController : ControllerBase
     {
-        private TeamContext teamContext;
-        public TeamController(TeamContext teamContext)
+        
+        private ITransferManager transferManager;
+        public TeamController(ITransferManager transferManager)
         {
-            this.teamContext = teamContext;
+            this.transferManager = transferManager;
+        }
+        [HttpPost]
+        public void SaveAll()
+        {
+            List<Team> teams = new List<Team>();
+            teams.Add(Team.Create("Shahrzad", 1399, "Test"));
+            teams.Add( Team.Create("Shiva", 1401, "Test2"));
+            transferManager.Transfer<Team>();
+
         }
     }
 }

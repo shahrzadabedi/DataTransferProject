@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataTransferProject
 {
     public interface IRepositoryWriter
     {
-        void WriteToRepository<TData>() where TData : class;
+        Task WriteToRepository();
     }
 }

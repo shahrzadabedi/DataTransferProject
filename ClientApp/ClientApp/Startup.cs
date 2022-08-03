@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using StackExchange.Redis;
 using static ClientApp.ServiceExtensions;
 namespace ClientApp
 {
@@ -25,8 +25,18 @@ namespace ClientApp
             services.ConfigureSqlContext(Configuration);
             services.ConfigureOtherContext(Configuration);
             services.AddScoped<ITransferManager, TransferManager>();
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}";
+            //});
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+              ConnectionMultiplexer.Connect(new ConfigurationOptions
+              {
+                  EndPoints = { $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}" },
+                  AbortOnConnectFail = false,
+            }));
             services.AddScoped<IRepositoryWriter, SqlRepositoryWriter>();
-            services.AddScoped<IRepositoryReader, ExcelRepositoryReader>();
+            services.AddScoped<IRepositoryReader, TeamExcelRepositoryReader>();
             services.AddControllers();
         }
 

@@ -7,29 +7,20 @@ using System.Threading.Tasks;
 
 namespace ClientApp
 {
-    public static class ByteArrayObjectExtension
+    public static class JsonObjectExtension
     {
-            public static  byte[] ObjectToByteArray(this Object obj)
-            {
-                if (obj == null)
-                    return null;
-
-                BinaryFormatter bf = new BinaryFormatter();
-                MemoryStream ms = new MemoryStream();
-                bf.Serialize(ms, obj);
-
-                return ms.ToArray();
-            }
-
-            public static Object ByteArrayToObject(this byte[] arrBytes)
-            {
-                MemoryStream memStream = new MemoryStream();
-                BinaryFormatter binForm = new BinaryFormatter();
-                memStream.Write(arrBytes, 0, arrBytes.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                Object obj = (Object)binForm.Deserialize(memStream);
-                return obj;
-            }
+        public static string ObjectToJson(this Object obj)
+        {
+            if (obj == null)
+                return null;
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
         }
-    
+
+        public static object Deserialize(this string input)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject(input);            
+            
+        }
+    }
+
 }

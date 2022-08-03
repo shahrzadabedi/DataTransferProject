@@ -20,12 +20,12 @@ namespace ClientApp.Controllers
             this.transferManager = transferManager;
         }
         [HttpPost]
-        public void SaveAll()
+        public async Task SaveAll()
         {
             List<Team> teams = new List<Team>();
             teams.Add(Team.Create("Shahrzad", 1399, "Test"));
             teams.Add( Team.Create("Shiva", 1401, "Test2"));
-            transferManager.Transfer<Team>();
+           await transferManager.Transfer<Team>();
 
         }
     }

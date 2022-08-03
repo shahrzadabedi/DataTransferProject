@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataTransferProject
 {
     public interface IRepositoryReader
     {
-        void ReadFromRepository<TData>() where TData : class;
+        Task ReadFromRepository();
     }
 }

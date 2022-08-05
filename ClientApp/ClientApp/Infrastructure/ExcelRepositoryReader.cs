@@ -16,51 +16,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ClientApp.Infrastructure
-{
-    public interface IRedisCacheService
-    {
-        T Get<T>(string key);
-        T Set<T>(string key, T value);
-    }
-    public class RedisCacheService : IRedisCacheService
-    {
-        private readonly IDistributedCache _cache;
-
-        public RedisCacheService(IDistributedCache cache)
-        {
-            _cache = cache;
-        }
-
-        public T Get<T>(string key)
-        {
-            var value = _cache.GetString(key);
-
-            if (value != null)
-            {
-                return JsonSerializer.Deserialize<T>(value);
-            }
-
-            return default;
-        }
-        public T Set<T>(string key, T value)
-        {
-            var timeOut = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24),
-                SlidingExpiration = TimeSpan.FromMinutes(60)
-            };
-
-            _cache.SetString(key, JsonSerializer.Serialize(value), timeOut);
-
-            return value;
-        }
-
-    }
+{  
     public abstract class ExcelRepositoryReader: IRepositoryReader
     {
         protected string _filePath;
         protected readonly IConfiguration _configuration;
-        protected readonly IRedisCacheService _redisCacheService;
         protected readonly IDatabase _redisDB; 
         public ExcelRepositoryReader(IConfiguration configuration
             ,IConnectionMultiplexer connectionMultiplexer)
@@ -69,26 +29,17 @@ namespace ClientApp.Infrastructure
             _filePath = _configuration.GetSection("TeamsFilePath").Value;
             _redisDB= connectionMultiplexer.GetDatabase();
         }
-        public async Task  ReadFromRepository()
+        public async Task  ReadFromRepository<T>() where T:class
         {
-            var excelDataList = ReadAllFromExcel();
-            //var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
-            // IDistributedCache cache = new MemoryDistributedCache(opts);
-        
-            var key = "Teams";
+            var excelDataList = ReadAllFromExcel();          
+            var key = typeof(T).Name;
             var pivotRedisValue = excelDataList[0].SerializeToJson();
-            //_redisDB.push(key, pivotRedisValue);
-            //var redisValue = _redisDB.StringGet(key);
-
             for (int i=0;i<excelDataList.Count;i++)
-            {
-                 
+            {                 
                 var value = excelDataList[i].SerializeToJson();
-                await _redisDB.ListRightPushAsync(new RedisKey(key),  new RedisValue(value));
+                await _redisDB.StringSetAsync(new RedisKey(key+"_"+i+1), new RedisValue(value), null, When.NotExists);
                 pivotRedisValue = value;
             }
-            
-        
         }
         public abstract ArrayList ReadAllFromExcel();
     }
@@ -131,9 +82,11 @@ namespace ClientApp.Infrastructure
             var excelDataList = new ArrayList();
             foreach (DataRow dr in content.Tables[0].Rows)
             {
-                var team = Team.Create(dr.Field<string>("Name"), 2022, "Test");
-                //dr.Field<int>("YearFounded"),
-                //dr.Field<string>("Description"));
+                var team = new TeamDto();
+                team.RowNo = (int)dr.Field<double>("RowNo");
+                team.Name = dr.Field<string>("Name");
+                team.Description = "Test";
+                team.YearFounded = 2022;                
                 //var team =  Activator.CreateInstance(typeof(TData));
                 excelDataList.Add(team);
             }

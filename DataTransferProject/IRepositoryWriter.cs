@@ -6,6 +6,7 @@ namespace DataTransferProject
 {
     public interface IRepositoryWriter
     {
-        Task WriteToRepository();
+        Task WriteToRepository<T>()
+            where T : class;
     }
 }

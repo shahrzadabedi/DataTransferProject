@@ -3,7 +3,7 @@ wsl --install -d ubuntu
 sudo apt-add-repository ppa:redislabs/redis
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-ge install redis-server
+sudo apt-get install redis-server
 sudo service redis-server start
 redis-cli
 ping

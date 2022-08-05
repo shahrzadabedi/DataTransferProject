@@ -18,27 +18,42 @@ namespace ClientApp.Infrastructure
         private readonly TeamContext dbContext;
         protected readonly IDatabase _redisDB;
         protected readonly IConfiguration _configuration;
-        public SqlRepositoryWriter(IConfiguration configuration,TeamContext dbContext,
+        public SqlRepositoryWriter(IConfiguration configuration, TeamContext dbContext,
             IConnectionMultiplexer connectionMultiplexer)
         {
-            this._configuration = configuration;           
+            this._configuration = configuration;
             _redisDB = connectionMultiplexer.GetDatabase();
             this.dbContext = dbContext;
         }
-        public async Task WriteToRepository()
+        public async Task WriteToRepository<T>() where T : class             
         {
             //var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
             //IDistributedCache cache = new MemoryDistributedCache(opts);
-            var redisValues = _redisDB.ListRange(new RedisKey("Teams"), 0);
-                //new RedisKey("2"));
+            var key = typeof(T).Name;
+            int i = 0;
             ArrayList arr = new ArrayList();
-            foreach (var redisValue in redisValues)
+            List<RedisKey> keyList = new List<RedisKey>();
+            while (true)
             {
-                var team = redisValue.ToString().<Team>();
+                var redisKey = new RedisKey(key + "_" + i + 1);
+                if (_redisDB.KeyExists(redisKey))
+                {
+                    keyList.Add(redisKey);
+                }
+                else
+                    break;
+                i++;
+            }
+
+            var redisValues =await _redisDB.StringGetAsync(keyList.ToArray());
+            foreach (var item in redisValues)
+            {
+                var teamDto = item.ToString().Deserialize<TeamDto>();
+                var team = teamDto.Map();
                 arr.Add(team);
             }
             await dbContext.BulkInsertAsync(arr.ToArray());
         }
-        
+
     }
 }

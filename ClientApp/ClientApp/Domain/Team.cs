@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ClientApp
 {
-    [Serializable]
+    
     public class Team
     {
         public Guid Id { get; private set; }
-        public int RowNo { get; set; }
+        public int RowNo { get; private set; }
         public string Name { get; private set; }
         public int YearFounded { get; private set; }
         public string Description { get; private set; }
@@ -20,13 +20,14 @@ namespace ClientApp
         //Players property is a "defensive copy", users can't modify the field
         public IReadOnlyCollection<Player> Players { get { return _players.AsReadOnly(); } } 
          public Manager Manager { get; private set; }
-        public static Team Create(string name, int yearFounded, string description)
+        public static Team Create(int rowNo,string name, int yearFounded, string description)
         {
             if (String.IsNullOrEmpty(name) || String.IsNullOrEmpty(description) || yearFounded.Equals(DateTime.MinValue))
                 throw new ArgumentNullException();
             return new Team()
             {
                 Id = Guid.NewGuid(),
+                RowNo = rowNo,
                 Name = name,
                 YearFounded = yearFounded,
                 Description = description,

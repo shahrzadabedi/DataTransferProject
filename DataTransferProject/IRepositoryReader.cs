@@ -5,6 +5,6 @@ namespace DataTransferProject
 {
     public interface IRepositoryReader
     {
-        Task ReadFromRepository();
+        Task ReadFromRepository<T>() where T:class;
     }
 }

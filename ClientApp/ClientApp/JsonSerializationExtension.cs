@@ -18,8 +18,7 @@ namespace ClientApp
 
         public static T Deserialize<T>(this string input)
         {
-            return Newtonsoft.Json.JsonConvert.
-                //.DeserializeObject<T>(input);            
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(input);            
             
         }
     }

@@ -96,6 +96,9 @@ namespace ClientApp.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RowNo")
+                        .HasColumnType("int");
+
                     b.Property<int>("YearFounded")
                         .HasColumnType("int");
 

@@ -61,7 +61,6 @@ namespace ClientApp.Infrastructure
         protected string _filePath;
         protected readonly IConfiguration _configuration;
         protected readonly IRedisCacheService _redisCacheService;
-        protected readonly IConnectionMultiplexer connectionMultiplexer;
         protected readonly IDatabase _redisDB; 
         public ExcelRepositoryReader(IConfiguration configuration
             ,IConnectionMultiplexer connectionMultiplexer)
@@ -74,13 +73,22 @@ namespace ClientApp.Infrastructure
         {
             var excelDataList = ReadAllFromExcel();
             //var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
-           // IDistributedCache cache = new MemoryDistributedCache(opts);
-            foreach (var item in excelDataList)
+            // IDistributedCache cache = new MemoryDistributedCache(opts);
+        
+            var key = "Teams";
+            var pivotRedisValue = excelDataList[0].SerializeToJson();
+            //_redisDB.push(key, pivotRedisValue);
+            //var redisValue = _redisDB.StringGet(key);
+
+            for (int i=0;i<excelDataList.Count;i++)
             {
-                string key = "Team_" + Guid.NewGuid().ToString();
-                await _redisDB.StringSetAsync(key, item.ObjectToJson());
+                 
+                var value = excelDataList[i].SerializeToJson();
+                await _redisDB.ListRightPushAsync(new RedisKey(key),  new RedisValue(value));
+                pivotRedisValue = value;
             }
             
+        
         }
         public abstract ArrayList ReadAllFromExcel();
     }

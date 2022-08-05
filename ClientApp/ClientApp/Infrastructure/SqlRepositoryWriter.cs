@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System;
@@ -15,21 +16,25 @@ namespace ClientApp.Infrastructure
     public class SqlRepositoryWriter : IRepositoryWriter
     {
         private readonly TeamContext dbContext;
-        protected readonly IConnectionMultiplexer connectionMultiplexer;
         protected readonly IDatabase _redisDB;
-        public SqlRepositoryWriter(TeamContext dbContext, IConnectionMultiplexer connectionMultiplexer)
+        protected readonly IConfiguration _configuration;
+        public SqlRepositoryWriter(IConfiguration configuration,TeamContext dbContext,
+            IConnectionMultiplexer connectionMultiplexer)
         {
+            this._configuration = configuration;           
+            _redisDB = connectionMultiplexer.GetDatabase();
             this.dbContext = dbContext;
         }
         public async Task WriteToRepository()
         {
-            var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
-            IDistributedCache cache = new MemoryDistributedCache(opts);
-            var redisValues = _redisDB.ListRange(new RedisKey("2"));
+            //var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
+            //IDistributedCache cache = new MemoryDistributedCache(opts);
+            var redisValues = _redisDB.ListRange(new RedisKey("Teams"), 0);
+                //new RedisKey("2"));
             ArrayList arr = new ArrayList();
             foreach (var redisValue in redisValues)
             {
-                var team = redisValue.ToString().Deserialize();
+                var team = redisValue.ToString().<Team>();
                 arr.Add(team);
             }
             await dbContext.BulkInsertAsync(arr.ToArray());

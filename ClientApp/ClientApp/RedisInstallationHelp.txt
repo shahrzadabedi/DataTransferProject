@@ -1,0 +1,13 @@
+*change region to US if error Code 0X87E10BC6 happens when installing wsl
+wsl --install -d ubuntu
+sudo apt-add-repository ppa:redislabs/redis
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-ge install redis-server
+sudo service redis-server start
+redis-cli
+ping
+
+problem with BGSave error:
+config set stop-writes-on-bgsave-error no
+OK

@@ -10,6 +10,7 @@ namespace ClientApp
     public class Team
     {
         public Guid Id { get; private set; }
+        public int RowNo { get; set; }
         public string Name { get; private set; }
         public int YearFounded { get; private set; }
         public string Description { get; private set; }

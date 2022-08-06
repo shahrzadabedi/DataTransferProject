@@ -47,6 +47,7 @@ namespace ClientApp
             services.AddScoped<ISerializer, JSonSerializer>();
             services.AddScoped<IDBManager, SQLDBManager>();
             services.AddScoped<ICacheManager, RedisCacheManager>();
+            services.AddScoped<IDomainDataConverter, DomainDataConverter>();
             services.AddScoped<ISourceDataReader, ExcelSourceDataReader>();
             services.AddScoped<IRepositoryWriter, RepositoryWriter>();
             services.AddScoped<IRepositoryReader, RepositoryReader>();
@@ -64,7 +65,7 @@ namespace ClientApp
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

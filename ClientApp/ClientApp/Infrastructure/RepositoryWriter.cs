@@ -16,20 +16,19 @@ namespace ClientApp.Infrastructure
 {
     public class RepositoryWriter : IRepositoryWriter
     {
-        
-        protected IMapper _mapper;
         protected ICacheManager _cacheManager;
         protected IDBManager _dbManager;
-        public RepositoryWriter(IMapper mapper, ICacheManager cacheManager, IDBManager dbManager)
-        {            
-            _mapper = mapper;
+        protected IDomainDataConverter _domainDataConverter;
+        public RepositoryWriter( ICacheManager cacheManager, IDBManager dbManager, IDomainDataConverter domainDataConverter)
+        {     
             _cacheManager = cacheManager;
+            _domainDataConverter = domainDataConverter;
             _dbManager = dbManager;
         }
         public async Task WriteToRepository<T,TDto>() where TDto : class where T:class
         {
             var dtoList =await _cacheManager.ReadAllData<TDto>();
-            var domainList = dtoList.Select(p => _mapper.Map<T>(p)).ToList();
+            var domainList = _domainDataConverter.Convert<T,TDto>(dtoList).ToList();
             await _dbManager.BulkInsertAllValues(domainList.ToArray());
         }      
     }

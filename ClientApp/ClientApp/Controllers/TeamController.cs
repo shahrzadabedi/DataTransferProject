@@ -21,9 +21,7 @@ namespace ClientApp.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> TransferAll()
-        {
-            List<Team> teams = new List<Team>();
-            
+        {            
             try
             {
                 await transferManager.Transfer<Team, TeamDto>();

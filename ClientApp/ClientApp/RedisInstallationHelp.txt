@@ -8,6 +8,15 @@ sudo service redis-server start
 redis-cli
 ping
 
-problem with BGSave error:
+*problem with BGSave error:
 config set stop-writes-on-bgsave-error no
 OK
+
+*select all keys
+Keys *
+
+*empty db
+flushdb
+
+
+

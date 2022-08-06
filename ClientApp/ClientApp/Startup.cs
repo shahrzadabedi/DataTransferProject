@@ -1,3 +1,4 @@
+using AutoMapper;
 using ClientApp.Infrastructure;
 using DataTransferProject;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +36,17 @@ namespace ClientApp
                   EndPoints = { $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}" },
                   AbortOnConnectFail = false,
             }));
-            services.AddScoped<IRepositoryWriter, SqlRepositoryWriter>();
+            
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new TeamProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddScoped<ISerializer, JSonSerializer>();
+            services.AddScoped<ICacheManager, RedisCacheManager>();            
+            services.AddScoped<IRepositoryWriter, TeamSQLRepositoryWriter>();
             services.AddScoped<IRepositoryReader, TeamExcelRepositoryReader>();
             services.AddControllers();
         }

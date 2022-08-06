@@ -4,7 +4,7 @@ namespace DataTransferProject
 {
     public interface ITransferManager
     {
-        Task Transfer<TData>() where TData : class;
+        Task Transfer<T,TDto>() where TDto : class where T:class;
     }
     public class TransferManager : ITransferManager
     {
@@ -15,12 +15,12 @@ namespace DataTransferProject
             this._repositoryReader = repositoryReader;
             this._repositoryWriter = repositoryWriter;
         }
-        public async Task Transfer<TData>() where TData : class
+        public async Task Transfer<T,TDto>() where TDto : class where T:class
         {
-            // read from some place and save to in-memory REDIS cache
-            await _repositoryReader.ReadFromRepository<TData>();
-           // read from in-memory REDIS cache and save to some place
-            await _repositoryWriter.WriteToRepository<TData>();
+            // read from some place and save to in-memory REDIS (or other) cache
+            await _repositoryReader.ReadFromRepository<TDto>();
+           // read from in-memory REDIS (or other) cache and save to some place
+            await _repositoryWriter.WriteToRepository<T,TDto>();
         }
     }
 }

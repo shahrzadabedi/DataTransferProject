@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferLib", "DataTransferProject\DataTransferLib.csproj", "{83DA071F-41B6-4C21-BBF9-25A86D1924F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferLib", "DataTransferLib\DataTransferLib.csproj", "{83DA071F-41B6-4C21-BBF9-25A86D1924F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApp", "ClientApp\ClientApp\ClientApp.csproj", "{93AEEC96-1175-4587-B100-6F337643A115}"
 EndProject

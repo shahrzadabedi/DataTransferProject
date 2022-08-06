@@ -1,6 +1,6 @@
 using AutoMapper;
 using ClientApp.Infrastructure;
-using DataTransferProject;
+using DataTransferLib;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

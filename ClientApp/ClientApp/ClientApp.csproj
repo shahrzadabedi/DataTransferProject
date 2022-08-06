@@ -19,9 +19,8 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
     <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="5.14.3" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\DataTransferProject\DataTransferLib.csproj" />
+    <ProjectReference Include="..\..\DataTransferLib\DataTransferLib.csproj" />
   </ItemGroup>
 	
 

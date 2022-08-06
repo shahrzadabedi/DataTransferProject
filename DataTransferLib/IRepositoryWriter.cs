@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DataTransferProject
+namespace DataTransferLib
 {
     public interface IRepositoryWriter
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ClientApp.Infrastructure
+namespace ClientApp.Domain
 {
     [Serializable]
     public class TeamDto

@@ -1,4 +1,5 @@
-﻿using DataTransferLib;
+﻿using ClientApp.Domain;
+using DataTransferLib;
 using ExcelDataReader;
 using Microsoft.Extensions.Configuration;
 using System;

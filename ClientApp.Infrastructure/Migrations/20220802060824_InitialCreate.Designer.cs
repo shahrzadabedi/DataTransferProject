@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ClientApp.Migrations
+namespace ClientApp.Infrastructure.Migrations
 {
     [DbContext(typeof(TeamContext))]
     [Migration("20220802060824_InitialCreate")]

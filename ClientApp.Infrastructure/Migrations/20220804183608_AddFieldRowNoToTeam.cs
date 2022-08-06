@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ClientApp.Migrations
+namespace ClientApp.Infrastructure.Migrations
 {
     public partial class AddFieldRowNoToTeam : Migration
     {

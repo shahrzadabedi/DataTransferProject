@@ -1,4 +1,5 @@
-﻿using ClientApp.Infrastructure;
+﻿using ClientApp.Domain;
+using ClientApp.Infrastructure;
 using DataTransferLib;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ClientApp.Migrations
+namespace ClientApp.Infrastructure.Migrations
 {
     [DbContext(typeof(TeamContext))]
     partial class TeamContextModelSnapshot : ModelSnapshot

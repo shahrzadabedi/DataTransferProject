@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
-namespace ClientApp
+namespace ClientApp.Infrastructure
 {
     public static class JsonObjectExtension
     {

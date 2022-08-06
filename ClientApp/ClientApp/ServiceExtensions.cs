@@ -15,12 +15,12 @@ namespace ClientApp
         {
             services.AddDbContext<TeamContext>(opts =>
             //opts.UseMemoryCache(IMemory));
-            opts.UseSqlServer(configuration.GetConnectionString("teamConnection"), b => b.MigrationsAssembly("ClientApp")));           
+            opts.UseSqlServer(configuration.GetConnectionString("teamConnection"), b => b.MigrationsAssembly("ClientApp.Infrastructure")));           
         }
         public static void ConfigureOtherContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<TeamContext>(opts =>
-               opts.UseSqlServer(configuration.GetConnectionString("teamConnection"), b => b.MigrationsAssembly("ClientApp")));
+               opts.UseSqlServer(configuration.GetConnectionString("teamConnection"), b => b.MigrationsAssembly("ClientApp.Infrastructure")));
         }
     }
 }

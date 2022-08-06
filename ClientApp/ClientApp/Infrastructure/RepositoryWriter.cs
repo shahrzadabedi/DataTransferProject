@@ -14,23 +14,23 @@ using System.Threading.Tasks;
 
 namespace ClientApp.Infrastructure
 {
-    public abstract class RepositoryWriter : IRepositoryWriter
+    public class RepositoryWriter : IRepositoryWriter
     {
         
         protected IMapper _mapper;
         protected ICacheManager _cacheManager;
-        public RepositoryWriter(IMapper mapper, ICacheManager cacheManager)
+        protected IDBManager _dbManager;
+        public RepositoryWriter(IMapper mapper, ICacheManager cacheManager, IDBManager dbManager)
         {            
             _mapper = mapper;
             _cacheManager = cacheManager;
+            _dbManager = dbManager;
         }
         public async Task WriteToRepository<T,TDto>() where TDto : class where T:class
         {
             var dtoList =await _cacheManager.ReadAllData<TDto>();
             var domainList = dtoList.Select(p => _mapper.Map<T>(p)).ToList();
-            await BulkInsertAllValues(domainList.ToArray());
-        }
-        public abstract Task BulkInsertAllValues(object[] input);       
-        //public abstract ArrayList DeserializeValues(RedisValue[] redisValues);
+            await _dbManager.BulkInsertAllValues(domainList.ToArray());
+        }      
     }
 }

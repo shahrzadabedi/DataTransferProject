@@ -16,17 +16,15 @@ namespace ClientApp.Infrastructure
     public abstract class RepositoryReader: IRepositoryReader
     {     
         protected ICacheManager _cacheManager;
-        public RepositoryReader(ISerializer serializer,ICacheManager cacheManager)
+        public RepositoryReader(ICacheManager cacheManager)
         {           
             _cacheManager = cacheManager;
         }
         public async Task ReadFromRepository<TDto>() where TDto: class
         {
-            List<object> excelDataList = ReadAll<TDto>();
-            await _cacheManager.CacheAllData<TDto>(excelDataList);
-       //await CacheAllData(excelDataList);
+            List<object> dataList = ReadAll<TDto>();
+            await _cacheManager.CacheAllData<TDto>(dataList);
         }
-        //public abstract Task CacheAllData(List<string> serializedList);
         public abstract List<object> ReadAll<TDto>() where TDto: class;
     }
 }

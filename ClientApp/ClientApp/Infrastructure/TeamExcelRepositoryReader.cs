@@ -15,7 +15,7 @@ namespace ClientApp.Infrastructure
         protected string _filePath;
         protected readonly IConfiguration _configuration;
         public TeamExcelRepositoryReader(IConfiguration configuration
-           ,ISerializer serializer,ICacheManager cacheManager): base(serializer,cacheManager)
+           ,ICacheManager cacheManager): base(cacheManager)
         {
             this._configuration = configuration;
             _filePath = _configuration.GetSection("TeamsFilePath").Value;

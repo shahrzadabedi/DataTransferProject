@@ -20,12 +20,21 @@ namespace ClientApp.Controllers
             this.transferManager = transferManager;
         }
         [HttpPost]
-        public async Task SaveAll()
+        public async Task<IActionResult> TransferAll()
         {
             List<Team> teams = new List<Team>();
-            //teams.Add(Team.Create("Shahrzad", 1399, "Test"));
-            //teams.Add( Team.Create("Shiva", 1401, "Test2"));
-           await transferManager.Transfer<Team,TeamDto>();
+            
+            try
+            {
+                await transferManager.Transfer<Team, TeamDto>();
+                return Ok();
+               
+            }
+            catch (Exception ex)
+            {
+                 return StatusCode(500, ex.Message); ;
+            }
+           
 
         }
     }

@@ -37,7 +37,10 @@ namespace ClientApp.Infrastructure
             for (int i = 0; i < serializedList.Count; i++)
             {
                 var value = serializedList[i];
-                await _redisDB.StringSetAsync(new RedisKey(keyPrefix + "_" + i + 1), new RedisValue(value), null, When.NotExists);
+                var redisKey = new RedisKey(keyPrefix + "_" + i + 1);
+                if (_redisDB.KeyExists(redisKey))
+                    throw new Exception("cache key already exists");
+                await _redisDB.StringSetAsync(redisKey, new RedisValue(value), null, When.NotExists);
             }
         }
         public List<RedisKey> ListAllKeys(string keyPrefix)

@@ -13,19 +13,20 @@ using System.Threading.Tasks;
 
 namespace ClientApp.Infrastructure
 {
-    public abstract class RepositoryReader: IRepositoryReader
+    public class RepositoryReader: IRepositoryReader
     {     
         protected ICacheManager _cacheManager;
-        public RepositoryReader(ICacheManager cacheManager)
+        protected ISourceDataReader _sourceDataReader;
+        public RepositoryReader(ICacheManager cacheManager, ISourceDataReader sourceDataReader)
         {           
             _cacheManager = cacheManager;
+            _sourceDataReader = sourceDataReader;
         }
         public async Task ReadFromRepository<TDto>() where TDto: class
         {
-            List<object> dataList = ReadAll<TDto>();
+            List<object> dataList = _sourceDataReader.ReadAll();
             await _cacheManager.CacheAllData<TDto>(dataList);
         }
-        public abstract List<object> ReadAll<TDto>() where TDto: class;
     }
 }
 

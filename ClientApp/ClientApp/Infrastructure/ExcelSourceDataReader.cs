@@ -1,27 +1,27 @@
 ﻿using ExcelDataReader;
 using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ClientApp.Infrastructure
 {
-    public class TeamExcelRepositoryReader : RepositoryReader
+    public class ExcelSourceDataReader : ISourceDataReader
     {
         protected string _filePath;
         protected readonly IConfiguration _configuration;
-        public TeamExcelRepositoryReader(IConfiguration configuration
-           ,ICacheManager cacheManager): base(cacheManager)
+        public ExcelSourceDataReader(IConfiguration configuration)        
         {
             this._configuration = configuration;
             _filePath = _configuration.GetSection("TeamsFilePath").Value;
         }
-        public override List<object> ReadAll<TDto>() where TDto: class
+        public List<object> ReadAll()
         {
+         
             IExcelDataReader reader = null;
             List<object> result = null;
             using (FileStream stream = File.Open(_filePath, FileMode.Open, FileAccess.Read))
@@ -46,12 +46,12 @@ namespace ClientApp.Infrastructure
 
                     // now assume that the type decided is 'Team'
                     // so the List would be created for Team                   
-                    result =  ConvertToArrayList(content);                    
+                    result = ConvertToArrayList(content);
                 }
             }
             return result;
-        }       
-       
+        }
+
         private List<object> ConvertToArrayList(DataSet content)
         {
             var excelDataList = new List<object>();
@@ -61,13 +61,10 @@ namespace ClientApp.Infrastructure
                 team.RowNo = (int)dr.Field<double>("RowNo");
                 team.Name = dr.Field<string>("Name");
                 team.Description = "Test";
-                team.YearFounded = 2022;                
-                //var team =  Activator.CreateInstance(typeof(TData));
+                team.YearFounded = 2022;
                 excelDataList.Add(team);
             }
             return excelDataList;
         }
     }
 }
-
-

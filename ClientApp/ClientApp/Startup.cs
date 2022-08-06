@@ -46,9 +46,10 @@ namespace ClientApp
             services.AddSingleton(mapper);
             services.AddScoped<ISerializer, JSonSerializer>();
             services.AddScoped<IDBManager, SQLDBManager>();
-            services.AddScoped<ICacheManager, RedisCacheManager>();            
+            services.AddScoped<ICacheManager, RedisCacheManager>();
+            services.AddScoped<ISourceDataReader, ExcelSourceDataReader>();
             services.AddScoped<IRepositoryWriter, RepositoryWriter>();
-            services.AddScoped<IRepositoryReader, TeamExcelRepositoryReader>();
+            services.AddScoped<IRepositoryReader, RepositoryReader>();
             services.AddControllers();
         }
 

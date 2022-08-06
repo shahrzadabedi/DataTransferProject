@@ -19,7 +19,7 @@ namespace ClientApp.Infrastructure
 
         public async Task<IEnumerable<TDto>> ReadAllData<TDto>() where TDto : class
         {
-            string dtoString = typeof(TDto).ToString();
+            string dtoString = typeof(TDto).Name;
             int dtoIndex = dtoString.IndexOf("Dto");            
             string keyPrefix = dtoString.Remove(dtoIndex); ;
             var keyList = ListAllKeys(keyPrefix);
@@ -31,7 +31,7 @@ namespace ClientApp.Infrastructure
 
         public async Task CacheAllData<TDto>(List<object> list) where TDto: class            
         {
-            string dtoString = typeof(TDto).ToString();
+            string dtoString = typeof(TDto).Name;
             int dtoIndex = dtoString.IndexOf("Dto");
             string keyPrefix = dtoString.Remove(dtoIndex);
             var serializedList = _serializer.SerializeAllData(list);         

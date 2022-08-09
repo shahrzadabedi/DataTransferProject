@@ -8,7 +8,7 @@ namespace DataTransferLib
     public interface ICacheManager
     {
          Task<IEnumerable<TDto>> ReadAllData<TDto>() where TDto : class;
-         Task CacheAllData<TDto>(List<object> list) where TDto:class;
+         Task CacheAllData<TDto>(List<TDto> list) where TDto:class;
        
     }
 }

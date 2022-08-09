@@ -5,6 +5,6 @@ namespace DataTransferLib
 {
     public interface IRepositoryReader
     {
-        Task ReadFromRepository<TDto>() where TDto: class;
+        Task ReadFromRepository<TDto>() where TDto: class,new();
     }
 }

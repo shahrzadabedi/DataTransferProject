@@ -74,10 +74,8 @@ namespace ClientApp.Infrastructure
                         
                     }
                     dto.GetType().GetProperty("YearFounded").SetValue(dto,2022);
-                    //team.RowNo = (int)dr.Field<double>("RowNo");
-                    //team.Name = 
-                    //team.Description = "Test";
-                    //team.YearFounded = 2022;
+                    dto.GetType().GetProperty("Description").SetValue(dto, "OK");
+                    
                     excelDataList.Add(dto);
                 }
             }

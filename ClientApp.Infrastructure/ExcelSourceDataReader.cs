@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,11 +22,11 @@ namespace ClientApp.Infrastructure
             this._configuration = configuration;
             _filePath = _configuration.GetSection("TeamsFilePath").Value;
         }
-        public List<object> ReadAll()
+        public List<TDTO> ReadAll<TDTO>() where TDTO:class, new()
         {
          
             IExcelDataReader reader = null;
-            List<object> result = null;
+            List<TDTO> result = null;
             using (FileStream stream = File.Open(_filePath, FileMode.Open, FileAccess.Read))
             {
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -42,30 +43,44 @@ namespace ClientApp.Infrastructure
                             UseHeaderRow = true
                         }
                     });
-                    //var columns = content.Tables[0].Columns.Cast<DataColumn>().Select(t => t.ColumnName).ToList();                    
+                                    
                     var d = content.CreateDataReader();
                     // TODO:  inject a logic that gives a list and rule for deciding what class to create
 
                     // now assume that the type decided is 'Team'
                     // so the List would be created for Team                   
-                    result = ConvertToArrayList(content);
+                    result = ConvertToArrayList<TDTO>(content);
                 }
             }
             return result;
         }
 
-        private List<object> ConvertToArrayList(DataSet content)
+        private List<TDTO> ConvertToArrayList<TDTO>(DataSet content) where TDTO: class, new ()
         {
-            var excelDataList = new List<object>();
-            foreach (DataRow dr in content.Tables[0].Rows)
+            var excelDataList = new List<TDTO>();
+            var ttype = typeof(TDTO).Name;
+            var columns = content.Tables[0].Columns.Cast<DataColumn>().Select(t => t.ColumnName).ToList();
+            if (ttype == "TeamDto")
             {
-                var team = new TeamDto();
-                team.RowNo = (int)dr.Field<double>("RowNo");
-                team.Name = dr.Field<string>("Name");
-                team.Description = "Test";
-                team.YearFounded = 2022;
-                excelDataList.Add(team);
+                foreach (DataRow dr in content.Tables[0].Rows)
+                {
+                    var dto = new TDTO();
+                    foreach (var col in columns)
+                    {
+                        if (col=="Name")
+                            dto.GetType().GetProperty("Name").SetValue(dto,dr.Field<string>("Name"));                       
+                        else if (col=="RowNo")
+                            dto.GetType().GetProperty("RowNo").SetValue(dto, (int)dr.Field<double>("RowNo"));
+                        
+                    }
+                    dto.GetType().GetProperty("YearFounded").SetValue(dto,2022);
+                    dto.GetType().GetProperty("Description").SetValue(dto, "OK");
+                    
+                    excelDataList.Add(dto);
+                }
             }
+            else
+                throw new Exception("No other data types to convert");
             return excelDataList;
         }
     }

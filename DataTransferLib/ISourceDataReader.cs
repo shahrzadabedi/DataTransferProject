@@ -7,6 +7,6 @@ namespace DataTransferLib
 {
     public interface ISourceDataReader
     {
-        List<object> ReadAll();
+        List<TDTO> ReadAll<TDTO>() where TDTO : class,new();
     }
 }

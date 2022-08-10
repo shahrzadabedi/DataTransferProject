@@ -14,9 +14,9 @@ namespace DataTransferLib
             _cacheManager = cacheManager;
             _sourceDataReader = sourceDataReader;
         }
-        public async Task ReadFromRepository<TDto>() where TDto: class
+        public async Task ReadFromRepository<TDto>() where TDto: class,new()
         {
-            List<object> dataList = _sourceDataReader.ReadAll();
+            List<TDto> dataList = _sourceDataReader.ReadAll<TDto>();
             await _cacheManager.CacheAllData<TDto>(dataList);
         }
     }

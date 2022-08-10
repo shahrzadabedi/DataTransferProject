@@ -7,8 +7,7 @@ namespace ClientApp.Domain
 {
     [Serializable]
     public class TeamDto
-    {
-      
+    {      
         public int RowNo { get; set; }
         public string Name { get;  set; }
         public int YearFounded { get;  set; }

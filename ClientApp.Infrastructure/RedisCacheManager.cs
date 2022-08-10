@@ -29,7 +29,7 @@ namespace ClientApp.Infrastructure
             return dtoList;
         }
 
-        public async Task CacheAllData<TDto>(List<object> list) where TDto: class            
+        public async Task CacheAllData<TDto>(List<TDto> list) where TDto: class            
         {
             string dtoString = typeof(TDto).Name;
             int dtoIndex = dtoString.IndexOf("Dto");

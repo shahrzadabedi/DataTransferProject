@@ -20,7 +20,7 @@ namespace ClientApp.Infrastructure
             return result;
         }
 
-        public List<string> SerializeAllData(List<object> list)
+        public List<string> SerializeAllData<TDTO>(List<TDTO> list)
         {
             List<string> result = new List<string>();
             foreach (var item in list)

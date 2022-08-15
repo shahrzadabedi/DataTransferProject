@@ -8,7 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
-using static ClientApp.ServiceExtensions;
+using System;
+using Microsoft.AspNetCore.Http;
 namespace ClientApp
 {
     public class Startup
@@ -43,6 +44,7 @@ namespace ClientApp
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
+
             services.AddSingleton(mapper);
             services.AddScoped<ISerializer, JSonSerializer>();
             services.AddScoped<IDBManager, SQLDBManager>();
@@ -61,11 +63,23 @@ namespace ClientApp
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseResponseCaching();
+            app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseAuthorization();
-            app.UseStaticFiles();
+            app.UseAuthorization();           
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                {
+                    Public = true,
+                    MaxAge = TimeSpan.FromSeconds(60)
+                };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+                    new string[] { "Accept-Encoding" };
+
+                await next();
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

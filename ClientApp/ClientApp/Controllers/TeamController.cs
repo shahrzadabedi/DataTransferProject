@@ -22,19 +22,23 @@ namespace ClientApp.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> TransferAll()
-        {            
+        {
             try
             {
                 await transferManager.Transfer<Team, TeamDto>();
                 return Ok();
-               
+
             }
             catch (Exception ex)
             {
-                 return StatusCode(500, ex.Message); ;
+                return StatusCode(500, ex.Message); ;
             }
-           
+        }       
 
+        [HttpGet, Route("GetResult")]
+        public  IActionResult GetResult([FromBody]  TeamDto team)
+        {
+            return new OkObjectResult(new TeamDto() { Name = "Shahrzad", Description = "test" });
         }
 
         

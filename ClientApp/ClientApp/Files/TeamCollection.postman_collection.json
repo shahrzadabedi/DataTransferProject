@@ -25,6 +25,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GetResult",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"YearFounded\":\"1984\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:35064/api/Team/GetResult",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "35064",
+					"path": [
+						"api",
+						"Team",
+						"GetResult"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

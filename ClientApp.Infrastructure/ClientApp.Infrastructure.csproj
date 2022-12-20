@@ -1,21 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.17">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.7" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="5.14.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="7.18.0" />
   </ItemGroup>
 
   <ItemGroup>

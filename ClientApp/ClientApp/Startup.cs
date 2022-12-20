@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using System;
 using Microsoft.AspNetCore.Http;
+using Quartz;
+using ClientApp.API;
+
 namespace ClientApp
 {
     public class Startup
@@ -25,19 +28,15 @@ namespace ClientApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureSqlContext(Configuration);
-            services.ConfigureOtherContext(Configuration);
             services.AddScoped<ITransferManager, TransferManager>();
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}";
-            //});
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
+
+            services.AddScoped<IConnectionMultiplexer>(sp =>
               ConnectionMultiplexer.Connect(new ConfigurationOptions
               {
                   EndPoints = { $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}" },
                   AbortOnConnectFail = false,
-            }));
-            
+              }));
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new TeamProfile());
@@ -53,6 +52,22 @@ namespace ClientApp
             services.AddScoped<ISourceDataReader, ExcelSourceDataReader>();
             services.AddScoped<IRepositoryWriter, RepositoryWriter>();
             services.AddScoped<IRepositoryReader, RepositoryReader>();
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory();
+
+                var writeToRepositoryJob = new JobKey("WriteToRepositoryJob");
+                q.AddJob<WriteToRepositoryJob>(opts => opts.WithIdentity(writeToRepositoryJob));
+                q.AddTrigger(opts => opts
+                    .ForJob(writeToRepositoryJob)
+                    .WithIdentity("WriteToRepositoryJob-trigger")
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInSeconds(5)
+                        .WithRepeatCount(1)));
+
+
+            });
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddControllers();
         }
 
@@ -67,7 +82,7 @@ namespace ClientApp
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseAuthorization();           
+            app.UseAuthorization();
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
@@ -84,6 +99,7 @@ namespace ClientApp
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

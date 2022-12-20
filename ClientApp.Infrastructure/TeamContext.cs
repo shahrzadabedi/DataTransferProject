@@ -15,7 +15,7 @@ namespace ClientApp.Infrastructure
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+        
         }
         public DbSet<Team> Teams { get; set; }
 

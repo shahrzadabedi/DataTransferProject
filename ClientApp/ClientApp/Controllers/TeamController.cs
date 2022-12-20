@@ -16,9 +16,14 @@ namespace ClientApp.Controllers
     {
         
         private ITransferManager transferManager;
-        public TeamController(ITransferManager transferManager)
+        private IRepositoryReader repositoryReader;
+        private IRepositoryWriter repositoryWriter;
+        public TeamController(ITransferManager transferManager,IRepositoryReader reader, 
+            IRepositoryWriter repositoryWriter)
         {
             this.transferManager = transferManager;
+            repositoryReader = reader;
+            this.repositoryWriter = repositoryWriter;
         }
         [HttpPost]
         public async Task<IActionResult> TransferAll()
@@ -40,7 +45,18 @@ namespace ClientApp.Controllers
         {
             return new OkObjectResult(new TeamDto() { Name = "Shahrzad", Description = "test" });
         }
-
+        [HttpPost,Route("CacheData")]
+        public async Task<IActionResult> CacheData()
+        {
+            await repositoryReader.ReadFromRepository<TeamDto>();
+            return Ok();
+        }
+        [HttpPost, Route("SaveData")]
+        public async Task<IActionResult> SaveData()
+        {
+            await repositoryWriter.WriteToRepository<Team,TeamDto>();
+            return Ok();
+        }
         
     }
 }

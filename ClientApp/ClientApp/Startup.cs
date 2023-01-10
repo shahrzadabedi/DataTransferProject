@@ -11,7 +11,6 @@ using StackExchange.Redis;
 using System;
 using Microsoft.AspNetCore.Http;
 using Quartz;
-using ClientApp.API;
 
 namespace ClientApp
 {
@@ -52,22 +51,27 @@ namespace ClientApp
             services.AddScoped<ISourceDataReader, ExcelSourceDataReader>();
             services.AddScoped<IRepositoryWriter, RepositoryWriter>();
             services.AddScoped<IRepositoryReader, RepositoryReader>();
-            services.AddQuartz(q =>
-            {
-                q.UseMicrosoftDependencyInjectionJobFactory();
+            //services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("teamConnection")));
 
-                var writeToRepositoryJob = new JobKey("WriteToRepositoryJob");
-                q.AddJob<WriteToRepositoryJob>(opts => opts.WithIdentity(writeToRepositoryJob));
-                q.AddTrigger(opts => opts
-                    .ForJob(writeToRepositoryJob)
-                    .WithIdentity("WriteToRepositoryJob-trigger")
-                    .WithSimpleSchedule(x => x
-                        .WithIntervalInSeconds(5)
-                        .WithRepeatCount(1)));
+            //services.AddHangfireServer(options => options.WorkerCount = Environment.ProcessorCount * 5);
+            //services.AddQuartz(q =>
+            //{
+            //    q.UseMicrosoftDependencyInjectionJobFactory();
+
+            //    var writeToRepositoryJob = new JobKey("WriteToRepositoryJob1");
+            //    q.AddJob<WriteToRepositoryJob>(opts => opts.WithIdentity(writeToRepositoryJob));
+            //    q.AddTrigger(opts => opts
+            //        .ForJob(writeToRepositoryJob)
+            //        .WithIdentity("WriteToRepositoryJob-trigger")
+            //        .UsingJobData("pageSize",100)
+            //        .UsingJobData("pageNo", 1)
+            //        .WithSimpleSchedule(x => x                        
+            //            .WithRepeatCount(0)));
 
 
-            });
-            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            //});
+         
+            //services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddControllers();
         }
 
@@ -81,7 +85,9 @@ namespace ClientApp
             app.UseResponseCaching();
             app.UseStaticFiles();
             app.UseRouting();
-
+            
+            //app.UseHangfireServer(options);
+            //app.UseHangfireDashboard();
             app.UseAuthorization();
             app.Use(async (context, next) =>
             {
@@ -99,7 +105,7 @@ namespace ClientApp
             {
                 endpoints.MapControllers();
             });
-
+           
         }
     }
 }

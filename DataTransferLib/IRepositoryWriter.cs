@@ -6,7 +6,7 @@ namespace DataTransferLib
 {
     public interface IRepositoryWriter
     {
-        Task WriteToRepository<T,TDTO>() where T:class where TDTO:class;
-           
+        Task WriteToRepository<T, TDTO>() where T : class where TDTO : class;
+
     }
 }

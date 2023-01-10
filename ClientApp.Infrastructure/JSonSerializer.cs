@@ -9,25 +9,22 @@ namespace ClientApp.Infrastructure
 {
     public class JSonSerializer : ISerializer
     {
-        public List<T> DeserializeAllData<T>(string[] list) where T : class
-        {
-            List<T> result = new List<T>();
+        public IEnumerable<T> DeserializeAllData<T>(string[] list) where T : class
+        {           
             foreach (var item in list)
             {
                 var teamDto = item.ToString().Deserialize<T>();
-                result.Add(teamDto);
-            }
-            return result;
+                yield return teamDto;
+            }            
         }
 
-        public List<string> SerializeAllData<TDTO>(List<TDTO> list)
-        {
-            List<string> result = new List<string>();
+        public IEnumerable<string> SerializeAllData<TDTO>(List<TDTO> list)
+        {         
             foreach (var item in list)
             {
-                result.Add(item.SerializeToJson());
+                yield return item.SerializeToJson();
             }
-            return result;
+           
         }
     }
 }

@@ -8,5 +8,10 @@ namespace DataTransferLib
     public interface IDBManager
     {
         Task BulkInsertAllValues(object[] input);
+        
+        Task BulkInsertAsync(IEnumerable<object> input);
+        void BulkInsert(IEnumerable<object> input);
+
     }
+
 }

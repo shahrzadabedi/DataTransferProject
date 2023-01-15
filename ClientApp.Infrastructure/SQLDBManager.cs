@@ -36,11 +36,9 @@ namespace ClientApp.Infrastructure
         public async Task BulkInsertAsync(IEnumerable<object> input) 
         {             
              await _dbContext.BulkInsertAsync(input, options => 
-             {
-                 options.UseParallel = true; 
+             {                
                  options.EnableConcurrencyForBulkOperation = true;               
                  options.BatchSize = 100;
-                 options.DisableValueGenerated = true;
              });
            
         }

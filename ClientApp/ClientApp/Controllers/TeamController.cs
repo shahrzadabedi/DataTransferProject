@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ClientApp.Controllers
@@ -16,19 +17,18 @@ namespace ClientApp.Controllers
 
         private ITransferManager transferManager;
         private IRepositoryReader repositoryReader;
-        //private IRepositoryWriter repositoryWriter;
         private ICacheManager cacheManager;
-        private Infrastructure.IDBManager dbManager;
+        private IDBManager dbManager;
         private IDomainDataConverter _domainDataConverter;
+        private StringBuilder log = new StringBuilder("");
         public TeamController(
              ITransferManager transferManager,
              IRepositoryReader reader,
-           ICacheManager cacheManager, Infrastructure.IDBManager dbManager,
+           ICacheManager cacheManager, IDBManager dbManager,
             IDomainDataConverter domainDataConverter)
         {
             this.transferManager = transferManager;
             repositoryReader = reader;
-            //this.repositoryWriter = repositoryWriter;
             this.cacheManager = cacheManager;
             this.dbManager = dbManager;
             this._domainDataConverter = domainDataConverter;
@@ -65,9 +65,9 @@ namespace ClientApp.Controllers
         }
         [HttpPost, Route("SaveDataParallel")]
         public async Task<IActionResult> SaveDataParallel(int parallelDegree, int totalCount)
-        {  
-            int pageSize = totalCount / parallelDegree;
-            int remainder = totalCount - pageSize * parallelDegree;
+        {
+            int chunkeSize = totalCount / parallelDegree;
+            int remainder = totalCount - chunkeSize * parallelDegree;
             System.Diagnostics.Stopwatch st = new System.Diagnostics.Stopwatch();
             st.Start();
             try
@@ -75,49 +75,60 @@ namespace ClientApp.Controllers
                 var tasks = new List<Task>();
                 for (int i = 0; i < parallelDegree; i++)
                 {
-                    tasks.Add(SaveChunkAsync(i, pageSize, parallelDegree, remainder));
+                    tasks.Add(SaveChunkAsync(i, chunkeSize, parallelDegree, remainder));
                 }
                 await Task.WhenAll(tasks);
                 st.Stop();
             }
-            catch (Exception ex)
+            catch
             {
             }
-            return Ok(st.ElapsedMilliseconds);
+            return Ok(new { st.ElapsedMilliseconds , log = log.ToString()});
 
         }
         [HttpPost, Route("SaveDataSimple")]
-        public IActionResult SaveDataWithSimple(int parallelDegree,  int totalCount)
+        public IActionResult SaveDataWithSimple(int parallelDegree, int totalCount)
         {
-            int pageSize = totalCount / parallelDegree;
-            int remainder = totalCount - pageSize * parallelDegree;
+            int chunkeSize = totalCount / parallelDegree;
+            int remainder = totalCount - chunkeSize * parallelDegree;
             System.Diagnostics.Stopwatch st = new System.Diagnostics.Stopwatch();
+            
             st.Start();
             try
             {
                 for (int i = 0; i < parallelDegree; i++)
                 {
-                    SaveChunk(i, pageSize, parallelDegree, remainder);
-                    //cacheManager.UpdateCacheDataAsync<TeamDto>(i * pageSize, (i == parallelDegree - 1 ? remainder : 0) + pageSize);
+                    SaveChunk(i, chunkeSize, parallelDegree, remainder);
                 }
                 st.Stop();
             }
             catch (Exception ex)
             {
             }
-            return Ok(st.ElapsedMilliseconds);
+            return Ok(new { st.ElapsedMilliseconds, log = log.ToString() });
         }
         private async Task SaveChunkAsync(int i, int pageSize, int parallelDegree, int remainder)
         {
-            var data = cacheManager.ReadDataAsync<TeamDto>(i * pageSize, (i == parallelDegree - 1 ? remainder : 0) + pageSize);
-            var arr = _domainDataConverter.Convert<Team, TeamDto>(data.Result);
+            log.Append(string.Format(" i: {0} Start ReadDataAsync, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
+            var data = await cacheManager.ReadDataAsync<TeamDto>(i * pageSize, (i == parallelDegree - 1 ? remainder : 0) + pageSize);
+          
+            log.Append(string.Format(" i: {0} End ReadDataAsync, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
+            log.Append(string.Format(" i: {0} Start Convert, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
+            var arr = await Task.Run(() => { return _domainDataConverter.Convert<Team, TeamDto>(data); });
+            log.Append(string.Format(" i: {0} End Convert, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
+            log.Append(string.Format(" i: {0} Start BulkInsertAsync, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
             await dbManager.BulkInsertAsync(arr);
+           
         }
         private void SaveChunk(int i, int pageSize, int parallelDegree, int remainder)
         {
+            log.Append(string.Format(" i: {0} ReadDataAsync, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
             var data = cacheManager.ReadData<TeamDto>(i * pageSize, (i == parallelDegree - 1 ? remainder : 0) + pageSize);
             var arr = _domainDataConverter.Convert<Team, TeamDto>(data);
+            log.Append(string.Format(" i: {0} End ReadData, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
+            log.Append(string.Format(" i: {0} Start BulkInsert, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
             dbManager.BulkInsert(arr);
+            log.Append(string.Format(" i: {0} End BulkInsert, T: {1}{2}", i, DateTime.Now, Environment.NewLine));
         }
     }
 }

@@ -18,5 +18,9 @@ Keys *
 *empty db
 flushdb
 
+If using Docker:
+*type:
+docker exec -it redis redis-cli
+
 
 

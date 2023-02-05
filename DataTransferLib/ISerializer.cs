@@ -8,7 +8,7 @@ namespace DataTransferLib
 {
     public interface ISerializer
     {
-        List<string> SerializeAllData<TDTO>(List<TDTO> list);
-        List<T> DeserializeAllData<T>(string[] list) where T:class;
+        IEnumerable<string> SerializeAllData<TDTO>(List<TDTO> list);
+        IEnumerable<T> DeserializeAllData<T>(string[] list) where T:class;
     }
 }

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 using System;
 using Microsoft.AspNetCore.Http;
+using Quartz;
+
 namespace ClientApp
 {
     public class Startup
@@ -25,19 +27,15 @@ namespace ClientApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureSqlContext(Configuration);
-            services.ConfigureOtherContext(Configuration);
             services.AddScoped<ITransferManager, TransferManager>();
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}";
-            //});
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
+
+            services.AddScoped<IConnectionMultiplexer>(sp =>
               ConnectionMultiplexer.Connect(new ConfigurationOptions
               {
                   EndPoints = { $"{Configuration.GetValue<string>("RedisCache:Host")}:{Configuration.GetValue<int>("RedisCache:Port")}" },
                   AbortOnConnectFail = false,
-            }));
-            
+              }));
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new TeamProfile());
@@ -53,6 +51,27 @@ namespace ClientApp
             services.AddScoped<ISourceDataReader, ExcelSourceDataReader>();
             services.AddScoped<IRepositoryWriter, RepositoryWriter>();
             services.AddScoped<IRepositoryReader, RepositoryReader>();
+            //services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("teamConnection")));
+
+            //services.AddHangfireServer(options => options.WorkerCount = Environment.ProcessorCount * 5);
+            //services.AddQuartz(q =>
+            //{
+            //    q.UseMicrosoftDependencyInjectionJobFactory();
+
+            //    var writeToRepositoryJob = new JobKey("WriteToRepositoryJob1");
+            //    q.AddJob<WriteToRepositoryJob>(opts => opts.WithIdentity(writeToRepositoryJob));
+            //    q.AddTrigger(opts => opts
+            //        .ForJob(writeToRepositoryJob)
+            //        .WithIdentity("WriteToRepositoryJob-trigger")
+            //        .UsingJobData("pageSize",100)
+            //        .UsingJobData("pageNo", 1)
+            //        .WithSimpleSchedule(x => x                        
+            //            .WithRepeatCount(0)));
+
+
+            //});
+         
+            //services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddControllers();
         }
 
@@ -66,8 +85,10 @@ namespace ClientApp
             app.UseResponseCaching();
             app.UseStaticFiles();
             app.UseRouting();
-
-            app.UseAuthorization();           
+            
+            //app.UseHangfireServer(options);
+            //app.UseHangfireDashboard();
+            app.UseAuthorization();
             app.Use(async (context, next) =>
             {
                 context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
@@ -84,6 +105,7 @@ namespace ClientApp
             {
                 endpoints.MapControllers();
             });
+           
         }
     }
 }

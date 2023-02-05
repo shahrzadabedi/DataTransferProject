@@ -40,7 +40,7 @@ namespace ClientApp.Infrastructure
             string dtoString = typeof(TDto).Name;
             int dtoIndex = dtoString.IndexOf("Dto");
             string keyPrefix = dtoString.Remove(dtoIndex); ;
-            var keyList = ListAllKeys(keyPrefix,skip, take);
+            var keyList =  ListAllKeysAsync(keyPrefix,skip, take);
             RedisValue[] cacheValues = await GetAllCacheValuesAsync(keyList);
             return cacheValues;
         }
@@ -85,9 +85,10 @@ namespace ClientApp.Infrastructure
             }
 
         }        
-        public async Task<RedisValue[]> GetAllCacheValuesAsync(IEnumerable<RedisKey> redisKeys)
+        public async Task<RedisValue[]> GetAllCacheValuesAsync(IAsyncEnumerable<RedisKey> redisKeys)
         {
-            return await _redisDB.StringGetAsync(redisKeys.ToArray());
+            var redisKeysarray = await redisKeys.ToArrayAsync();
+            return await _redisDB.StringGetAsync(redisKeysarray);
         }
       
         public  RedisValue[] GetAllCacheValues(IEnumerable<RedisKey> redisKeys)
@@ -99,16 +100,15 @@ namespace ClientApp.Infrastructure
             var key = keyPrefix;
             int i = skip;
            
-            //List<RedisKey> keyList = new List<RedisKey>();
             int count = 0;
             while ((count< take && take.HasValue ) || !take.HasValue  )
             {
                 var redisKeyFalse = new RedisKey(key + ":" + i + 1 + ":" + false.ToString());
                 var redisKeyTrue  = new RedisKey(key + ":" + i + 1 + ":" + true.ToString());
+                
                 if (!_redisDB.KeyExists(redisKeyFalse) && !_redisDB.KeyExists(redisKeyTrue))
                 {
                     break;
-                    //keyList.Add(redisKey);
                 }
                 else if (_redisDB.KeyExists(redisKeyFalse))
                 {
@@ -122,11 +122,36 @@ namespace ClientApp.Infrastructure
                     continue;                    
                 }
             }
-            //int totalPages = (int)Math.Ceiling((decimal)count / pageSize);
-            //if (pageNo > totalPages)
-            // throw new Exception("Exception");            
-            //return keyList;
-                //.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
+        }
+
+        private async IAsyncEnumerable<RedisKey> ListAllKeysAsync(string keyPrefix, int skip, int? take = null)
+        {
+            var key = keyPrefix;
+            int i = skip;
+
+            int count = 0;
+            while ((count < take && take.HasValue) || !take.HasValue)
+            {
+                var redisKeyFalse = new RedisKey(key + ":" + i + 1 + ":" + false.ToString());
+                var redisKeyTrue = new RedisKey(key + ":" + i + 1 + ":" + true.ToString());
+                bool keyFalseExists = await _redisDB.KeyExistsAsync(redisKeyFalse);
+                bool keyTrueExist = await _redisDB.KeyExistsAsync(redisKeyTrue);
+                if (!keyFalseExists && !keyTrueExist)
+                {
+                    break;
+                }
+                else if (keyFalseExists)
+                {
+                    yield return  redisKeyFalse;
+                    i++;
+                    count++;
+                }
+                else
+                {
+                    i++;
+                    continue;
+                }
+            }
         }
 
         public IEnumerable<TDto> ReadAllData<TDto>() where TDto : class

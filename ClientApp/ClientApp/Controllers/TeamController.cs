@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace ClientApp.Controllers
 {
@@ -72,16 +73,21 @@ namespace ClientApp.Controllers
             st.Start();
             try
             {
-                var tasks = new List<Task>();
-                for (int i = 0; i < parallelDegree; i++)
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    tasks.Add(SaveChunkAsync(i, chunkeSize, parallelDegree, remainder));
+                    var tasks = new List<Task>();
+                    for (int i = 0; i < parallelDegree; i++)
+                    {
+                        tasks.Add(SaveChunkAsync(i, chunkeSize, parallelDegree, remainder));
+                    }
+                    await Task.WhenAll(tasks);
+                    scope.Complete();
+                    st.Stop();
                 }
-                await Task.WhenAll(tasks);
-                st.Stop();
             }
-            catch
+            catch (Exception ex)
             {
+                log.Append(ex.Message);
             }
             return Ok(new { st.ElapsedMilliseconds , log = log.ToString()});
 

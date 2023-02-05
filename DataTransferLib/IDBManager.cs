@@ -11,7 +11,6 @@ namespace DataTransferLib
         
         Task BulkInsertAsync(IEnumerable<object> input);
         void BulkInsert(IEnumerable<object> input);
-
     }
 
 }
